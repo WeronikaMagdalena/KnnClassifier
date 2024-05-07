@@ -3,8 +3,7 @@ package com.proccesor;
 import com.data.Dataset;
 import com.data.Instance;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class KnnClassifier {
     private Dataset trainingDataset;
@@ -15,27 +14,51 @@ public class KnnClassifier {
         this.k = k;
     }
 
+    // Performs kNN classification
     public String classifyInstance(Instance instance) {
-        // Calculate distances between the new instance and all instances in the training dataset
-        Map<Double, String> distancesToClasses = new HashMap<>();
-        for (Instance trainingInstance : trainingDataset.getElements()) {
-            double distance = calculateDistance(instance, trainingInstance);
-            distancesToClasses.put(distance, trainingInstance.getClassName());
+        List<Instance> neighbors = new ArrayList<>();
+        for (Instance neighbor : trainingDataset.getElements()) {
+            double distance = calculateDistance(neighbor, instance);
+            neighbor.setDistance(distance);
+            neighbors.add(neighbor);
         }
 
-        // Sort distances and find the most frequent class among the k nearest neighbors
-        String[] nearestNeighbors = new String[k];
-        int count = 0;
-        for (Map.Entry<Double, String> entry : distancesToClasses.entrySet()) {
-            if (count < k) {
-                nearestNeighbors[count++] = entry.getValue();
-            } else {
-                // Find the nearest neighbor with the maximum frequency
-                String mostFrequentClass = findMostFrequentClass(nearestNeighbors);
-                return mostFrequentClass;
+        // Sort neighbors by distance
+        Collections.sort(neighbors, Comparator.comparingDouble(o -> o.getDistance()));
+
+        // Count occurrences of each class among the k nearest neighbors
+// Initialize a Map to store class counts
+        Map<String, Integer> classCounts = new HashMap<>();
+
+// Initialize counts for each class to zero
+        for (String className : trainingDataset.getClasses()) {
+            classCounts.put(className, 0);
+        }
+
+// Loop through neighbors
+        for (int i = 0; i < k; i++) {
+            Instance neighbor = neighbors.get(i);
+            String className = neighbor.getClassName();
+
+            // Increment count for the corresponding class
+            classCounts.put(className, classCounts.get(className) + 1);
+        }
+
+        // Find the class with the most occurrences
+        int maxCount = -1;
+        String predictedClass = "";
+
+        for (Map.Entry<String, Integer> entry : classCounts.entrySet()) {
+            String className = entry.getKey();
+            int count = entry.getValue();
+
+            if (count > maxCount) {
+                maxCount = count;
+                predictedClass = className;
             }
         }
-        return null; // Return null if something goes wrong
+
+        return predictedClass;
     }
 
     // Calculate Euclidean distance between two instances
@@ -65,4 +88,25 @@ public class KnnClassifier {
         }
         return mostFrequentClass;
     }
+
+    public double calculateAccuracy() {
+        if (trainingDataset == null) {
+            return 0.0; // Return 0 if test dataset is empty
+        }
+
+        int correctPredictions = 0;
+        int totalInstances = trainingDataset.getNumRows();
+
+        // Iterate over instances in the test dataset
+        for (Instance testInstance : trainingDataset.getElements()) {
+            String predictedClass = classifyInstance(testInstance);
+            if (predictedClass != null && predictedClass.equals(testInstance.getClassName())) {
+                correctPredictions++;
+            }
+        }
+
+        // Calculate accuracy
+        return (double) correctPredictions / totalInstances;
+    }
+
 }

@@ -3,6 +3,8 @@ package com.data;
 import com.data.Instance;
 
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 public class Dataset {
     private int numRows;
@@ -41,5 +43,12 @@ public class Dataset {
         }
     }
 
+    public Set<String> getClasses() {
+        Set<String> classes = new HashSet<>();
+        for (Instance instance : elements) {
+            classes.add(instance.getClassName());
+        }
+        return classes;
+    }
 }
 

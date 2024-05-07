@@ -29,7 +29,8 @@ public class DatasetReader {
             double min = DataNormalizer.findMinValue(dataset);
             double max = DataNormalizer.findMaxValue(dataset);
             for (Instance instance : dataset.getElements()) {
-                instance.setCoefficients(DataNormalizer.minMaxNormalize(instance.getCoefficients(), min, max));
+                double[] normalizedInstance = DataNormalizer.minMaxNormalize(instance.getCoefficients(), min, max);
+                instance.setCoefficients(normalizedInstance);
             }
             return dataset;
 
