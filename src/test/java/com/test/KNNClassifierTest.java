@@ -56,7 +56,7 @@ public class KNNClassifierTest {
 
     @Test
     public void setsDivision() {
-        String dataFile = "C:\\Users\\werka\\IdeaProjects\\KnnClassifier\\src\\main\\resources\\glass.csv";
+        String dataFile = "C:\\Users\\werka\\IdeaProjects\\KnnClassifier\\src\\main\\resources\\ciudades.csv";
         Dataset dataset = DatasetReader.readFromFile(dataFile);
         KnnClassifier knn = new KnnClassifier(dataset, 0.8, 8);
         System.out.println(knn.getTrainingData().getNumRows());

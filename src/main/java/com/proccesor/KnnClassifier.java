@@ -6,11 +6,13 @@ import com.data.Instance;
 import java.util.*;
 
 public class KnnClassifier {
+    Dataset dataset;
     Dataset trainingData;
     Dataset testData;
     int k;
 
     public KnnClassifier(Dataset normalizedData, double trainingDatasetSize, int k) {
+        dataset = normalizedData;
         normalizedData.shuffleInstances();
         int splitIndex = (int) (normalizedData.getNumRows() * trainingDatasetSize);
 
@@ -76,6 +78,10 @@ public class KnnClassifier {
         public int compareTo(NeighborDistance other) {
             return Double.compare(this.distance, other.distance);
         }
+    }
+
+    public Dataset getDataset() {
+        return dataset;
     }
 
     public Dataset getTrainingData() {

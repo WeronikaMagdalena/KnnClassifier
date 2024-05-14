@@ -15,6 +15,8 @@ public class KnnClassificationApp {
     private static final String IRIS = "iris";
     private static final String glassDataPath = "C:\\Users\\werka\\IdeaProjects\\KnnClassifier\\src\\main\\resources\\glass.csv";
     private static final String GLASS = "glass";
+    private static final String citiesDataPath = "C:\\Users\\werka\\IdeaProjects\\KnnClassifier\\src\\main\\resources\\ciudades.csv";
+    private static final String CITIES = "cities";
     private static String currentDataset = IRIS;
 
     public static void main(String[] args) {
@@ -36,6 +38,9 @@ public class KnnClassificationApp {
                         if (currentDataset.equals(IRIS)) {
                             currentDataset = GLASS;
                             dataset = DatasetReader.readFromFile(glassDataPath);
+                        } else if (currentDataset.equals(GLASS)){
+                            currentDataset = CITIES;
+                            dataset = DatasetReader.readFromFile(citiesDataPath);
                         } else {
                             currentDataset = IRIS;
                             dataset = DatasetReader.readFromFile(irisDataPath);
@@ -55,7 +60,7 @@ public class KnnClassificationApp {
                         System.out.println(knn.classify(instance));
                         break;
                     case "4":
-                        ConfusionMatrix matrixCalculator = new ConfusionMatrix(knn, knn.getTestData());
+                        ConfusionMatrix matrixCalculator = new ConfusionMatrix(knn);
                         Map<String, Map<String, Integer>> confusionMatrix = matrixCalculator.computeConfusionMatrix();
                         Set<String> classes = dataset.getClasses();
 
