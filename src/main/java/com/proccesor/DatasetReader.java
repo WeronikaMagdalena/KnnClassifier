@@ -11,6 +11,7 @@ public class DatasetReader {
 
     public static Dataset readFromFile(String fileName) {
         try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
+//            String[]
             int numRows = Integer.parseInt(reader.readLine());
             int numCols = Integer.parseInt(reader.readLine());
 
@@ -26,12 +27,6 @@ public class DatasetReader {
             }
 
             Dataset dataset = new Dataset(numRows, numCols, matrix);
-            double min = DataNormalizer.findMinValue(dataset);
-            double max = DataNormalizer.findMaxValue(dataset);
-            for (Instance instance : dataset.getElements()) {
-                double[] normalizedInstance = DataNormalizer.minMaxNormalize(instance.getCoefficients(), min, max);
-                instance.setCoefficients(normalizedInstance);
-            }
             return dataset;
 
         } catch (IOException e) {

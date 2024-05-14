@@ -6,7 +6,6 @@ import com.proccesor.ConfusionMatrix;
 import com.proccesor.DatasetReader;
 import com.proccesor.KnnClassifier;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
@@ -16,18 +15,16 @@ public class KnnClassificationApp {
     private static final String IRIS = "iris";
     private static final String glassDataPath = "C:\\Users\\werka\\IdeaProjects\\KnnClassifier\\src\\main\\resources\\glass.csv";
     private static final String GLASS = "glass";
+    private static String currentDataset = IRIS;
 
     public static void main(String[] args) {
-        String currentDataset = IRIS;
 
-        System.out.println("------------------ MENU ------------------");
-        System.out.println(String.format("1. Change dataset (current: %s)", currentDataset));
-        System.out.println("2. Show data");
-        System.out.println("3. Classify instance");
-        System.out.println("4. Show confusion matrix");
+        printMenu();
 
         Dataset dataset = DatasetReader.readFromFile(irisDataPath);
-        KnnClassifier knn = new KnnClassifier(dataset, 9);
+        KnnClassifier knn = new KnnClassifier(dataset, 0.8, 8);
+
+        Integer scalingMethod = 2;
 
         Scanner scanner = new Scanner(System.in);
         while (true) {
@@ -43,10 +40,10 @@ public class KnnClassificationApp {
                             currentDataset = IRIS;
                             dataset = DatasetReader.readFromFile(irisDataPath);
                         }
-                        knn = new KnnClassifier(dataset, 10);
+                        knn = new KnnClassifier(dataset, 0.8, 8);
                         break;
                     case "2":
-                        dataset.print();
+                        dataset.printDataset();
                         break;
                     case "3":
                         int noOfColumns = dataset.getNumCols();
@@ -55,10 +52,10 @@ public class KnnClassificationApp {
                             coefficients[i] = scanner.nextDouble();
                         }
                         Instance instance = new Instance(coefficients);
-                        System.out.println(knn.classifyInstance(instance));
+                        System.out.println(knn.classify(instance));
                         break;
                     case "4":
-                        ConfusionMatrix matrixCalculator = new ConfusionMatrix(knn, dataset);
+                        ConfusionMatrix matrixCalculator = new ConfusionMatrix(knn, knn.getTestData());
                         Map<String, Map<String, Integer>> confusionMatrix = matrixCalculator.computeConfusionMatrix();
                         Set<String> classes = dataset.getClasses();
 
@@ -77,20 +74,43 @@ public class KnnClassificationApp {
                             }
                             System.out.println();
                         }
-
+                        break;
+                    case "5":
+                        System.out.println("Number of attributes: " + dataset.getNumCols());
+                        break;
+                    case "6":
+                        System.out.println("Number of instances: " + dataset.getNumRows());
+                        break;
+                    case "7":
+                        System.out.println("1. No preprocessing" + (scalingMethod == 1 ? " <current" : ""));
+                        System.out.println("2. MinMax Scaler" + (scalingMethod == 2 ? " <current" : ""));
+                        System.out.println("3. Standardization" + (scalingMethod == 3 ? " <current" : ""));
+                        scalingMethod = scanner.nextInt();
+                        dataset.applyPreprocessing(scalingMethod);
+                        break;
+                    case "8":
+                        dataset.printPreprocessedData();
                         break;
                     case "exit":
                         return;
                     default:
-                        System.out.println("------------------ MENU ------------------");
-                        System.out.println(String.format("1. Change dataset (current: %s)", currentDataset));
-                        System.out.println("2. Show data");
-                        System.out.println("3. Classify instance");
-                        System.out.println("4. Show confusion matrix");
+                        printMenu();
                         break;
                 }
             }
         }
+    }
+
+    public static void printMenu() {
+        System.out.println("------------------ MENU ------------------");
+        System.out.println(String.format("1. Change dataset (current: %s)", currentDataset));
+        System.out.println("2. Show data");
+        System.out.println("3. Classify instance");
+        System.out.println("4. Show confusion matrix");
+        System.out.println("5. Number of attributes");
+        System.out.println("6. Number of instances");
+        System.out.println("7. Pick preprocessing method");
+        System.out.println("8. Show preprocessed data");
     }
 
 }

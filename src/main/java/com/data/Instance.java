@@ -4,7 +4,6 @@ import com.model.Vector;
 
 public class Instance extends Vector {
     private String className;
-    private double distance;
 
     public Instance(int dimension) {
         super(dimension);
@@ -19,20 +18,12 @@ public class Instance extends Vector {
         this.className = className;
     }
 
-    public void setClassName(String className) {
-        this.className = className;
+    public void setClassName(String name) {
+        className = name;
     }
 
     public String getClassName() {
         return className;
-    }
-
-    public void setDistance(double distance) {
-        this.distance = distance;
-    }
-
-    public double getDistance() {
-        return distance;
     }
 
 }

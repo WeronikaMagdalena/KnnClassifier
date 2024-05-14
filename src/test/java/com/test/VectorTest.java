@@ -4,6 +4,8 @@ import com.model.Vector;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.Scanner;
+
 public class VectorTest {
     private Vector vector1 = new Vector(3);
     private Vector vector2 = new Vector(3);
@@ -34,4 +36,5 @@ public class VectorTest {
         System.out.println(result);
         Assert.assertEquals(6, result, 0);
     }
+
 }

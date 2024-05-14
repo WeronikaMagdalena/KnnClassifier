@@ -6,9 +6,6 @@ import com.data.Instance;
 import java.util.HashMap;
 import java.util.Map;
 
-import java.util.HashMap;
-import java.util.Map;
-
 public class ConfusionMatrix {
 
     private KnnClassifier knnClassifier;
@@ -30,9 +27,9 @@ public class ConfusionMatrix {
         }
 
         // Compute confusion matrix
-        for (Instance testInstance : testDataset.getElements()) {
+        for (Instance testInstance : testDataset.getInstances()) {
             String actualClass = testInstance.getClassName();
-            String predictedClass = knnClassifier.classifyInstance(testInstance);
+            String predictedClass = knnClassifier.classify(testInstance);
             int count = matrix.get(actualClass).get(predictedClass);
             matrix.get(actualClass).put(predictedClass, count + 1);
         }

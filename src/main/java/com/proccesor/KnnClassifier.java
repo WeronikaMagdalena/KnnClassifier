@@ -6,107 +6,84 @@ import com.data.Instance;
 import java.util.*;
 
 public class KnnClassifier {
-    private Dataset trainingDataset;
-    private int k;
+    Dataset trainingData;
+    Dataset testData;
+    int k;
 
-    public KnnClassifier(Dataset trainingDataset, int k) {
-        this.trainingDataset = trainingDataset;
+    public KnnClassifier(Dataset normalizedData, double trainingDatasetSize, int k) {
+        normalizedData.shuffleInstances();
+        int splitIndex = (int) (normalizedData.getNumRows() * trainingDatasetSize);
+
+        Instance[] instances = normalizedData.getInstances();
+
+        Instance[] trainingInstances = Arrays.copyOfRange(instances, 0, splitIndex);
+        Instance[] testInstances = Arrays.copyOfRange(instances, splitIndex, instances.length);
+
+        this.trainingData = new Dataset(trainingInstances.length, normalizedData.getNumCols(), trainingInstances);
+        this.testData = new Dataset(testInstances.length, normalizedData.getNumCols(), testInstances);
         this.k = k;
     }
 
-    // Performs kNN classification
-    public String classifyInstance(Instance instance) {
-        List<Instance> neighbors = new ArrayList<>();
-        for (Instance neighbor : trainingDataset.getElements()) {
-            double distance = calculateDistance(neighbor, instance);
-            neighbor.setDistance(distance);
-            neighbors.add(neighbor);
+    public String classify(Instance instance) {
+        // Calculate distances between 'instance' and all instances in trainingData
+        PriorityQueue<NeighborDistance> pq = new PriorityQueue<>(k);
+        for (Instance trainInstance : trainingData.getInstances()) {
+            double distance = calculateDistance(instance, trainInstance);
+            pq.offer(new NeighborDistance(trainInstance, distance));
         }
 
-        // Sort neighbors by distance
-        Collections.sort(neighbors, Comparator.comparingDouble(o -> o.getDistance()));
-
-        // Count occurrences of each class among the k nearest neighbors
-// Initialize a Map to store class counts
-        Map<String, Integer> classCounts = new HashMap<>();
-
-// Initialize counts for each class to zero
-        for (String className : trainingDataset.getClasses()) {
-            classCounts.put(className, 0);
-        }
-
-// Loop through neighbors
+        // Count the occurrences of each class among the k-nearest neighbors
+        Map<String, Integer> classVotes = new HashMap<>();
         for (int i = 0; i < k; i++) {
-            Instance neighbor = neighbors.get(i);
-            String className = neighbor.getClassName();
-
-            // Increment count for the corresponding class
-            classCounts.put(className, classCounts.get(className) + 1);
+            Instance neighbor = pq.poll().instance;
+            String classLabel = neighbor.getClassName();
+            classVotes.put(classLabel, classVotes.getOrDefault(classLabel, 0) + 1);
         }
 
-        // Find the class with the most occurrences
-        int maxCount = -1;
-        String predictedClass = "";
-
-        for (Map.Entry<String, Integer> entry : classCounts.entrySet()) {
-            String className = entry.getKey();
-            int count = entry.getValue();
-
-            if (count > maxCount) {
-                maxCount = count;
-                predictedClass = className;
+        // Assign the class with the highest count as the predicted class for 'instance'
+        String predictedClass = null;
+        int maxVotes = -1;
+        for (Map.Entry<String, Integer> entry : classVotes.entrySet()) {
+            if (entry.getValue() > maxVotes) {
+                maxVotes = entry.getValue();
+                predictedClass = entry.getKey();
             }
         }
-
         return predictedClass;
     }
 
-    // Calculate Euclidean distance between two instances
+    // Helper method to calculate Euclidean distance between two instances
     private double calculateDistance(Instance instance1, Instance instance2) {
-        double[] coefficients1 = instance1.getCoefficients();
-        double[] coefficients2 = instance2.getCoefficients();
+        double[] features1 = instance1.getCoefficients();
+        double[] features2 = instance2.getCoefficients();
         double sum = 0.0;
-        for (int i = 0; i < coefficients1.length; i++) {
-            sum += Math.pow(coefficients1[i] - coefficients2[i], 2);
+        for (int i = 0; i < features1.length; i++) {
+            sum += Math.pow(features1[i] - features2[i], 2);
         }
         return Math.sqrt(sum);
     }
 
-    // Find the most frequent class among the nearest neighbors
-    private String findMostFrequentClass(String[] nearestNeighbors) {
-        Map<String, Integer> classCount = new HashMap<>();
-        for (String neighbor : nearestNeighbors) {
-            classCount.put(neighbor, classCount.getOrDefault(neighbor, 0) + 1);
+    // Class to represent a neighbor along with its distance
+    private class NeighborDistance implements Comparable<NeighborDistance> {
+        Instance instance;
+        double distance;
+
+        NeighborDistance(Instance instance, double distance) {
+            this.instance = instance;
+            this.distance = distance;
         }
-        String mostFrequentClass = null;
-        int maxCount = 0;
-        for (Map.Entry<String, Integer> entry : classCount.entrySet()) {
-            if (entry.getValue() > maxCount) {
-                maxCount = entry.getValue();
-                mostFrequentClass = entry.getKey();
-            }
+
+        public int compareTo(NeighborDistance other) {
+            return Double.compare(this.distance, other.distance);
         }
-        return mostFrequentClass;
     }
 
-    public double calculateAccuracy() {
-        if (trainingDataset == null) {
-            return 0.0; // Return 0 if test dataset is empty
-        }
+    public Dataset getTrainingData() {
+        return trainingData;
+    }
 
-        int correctPredictions = 0;
-        int totalInstances = trainingDataset.getNumRows();
-
-        // Iterate over instances in the test dataset
-        for (Instance testInstance : trainingDataset.getElements()) {
-            String predictedClass = classifyInstance(testInstance);
-            if (predictedClass != null && predictedClass.equals(testInstance.getClassName())) {
-                correctPredictions++;
-            }
-        }
-
-        // Calculate accuracy
-        return (double) correctPredictions / totalInstances;
+    public Dataset getTestData() {
+        return testData;
     }
 
 }
