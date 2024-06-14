@@ -17,6 +17,7 @@ The K-Nearest Neighbors (KNN) classifier is a simple, non-parametric, and lazy l
 
 Commonly used distance metrics include:
 - **Euclidean Distance**: \( d(p, q) = \sqrt{\sum_{i=1}^n (p_i - q_i)^2} \)
+- \[ d(p, q) = \sqrt{\sum_{i=1}^n (p_i - q_i)^2} \]
 - **Manhattan Distance**: \( d(p, q) = \sum_{i=1}^n |p_i - q_i| \)
 - **Minkowski Distance**: \( d(p, q) = \left( \sum_{i=1}^n |p_i - q_i|^p \right)^{1/p} \)
 
