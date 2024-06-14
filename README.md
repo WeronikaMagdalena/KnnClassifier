@@ -4,26 +4,16 @@ This Java program implements a K-Nearest Neighbors (KNN) classifier for classifi
 
 ## Table of Contents
 1. [Overview](#overview)
-2. [Getting Started](#getting-started)
-3. [Usage](#usage)
-4. [Methods](#methods)
-5. [Screenshots](#screenshots)
-6. [Comments and Explanations](#comments-and-explanations)
+2. [Usage](#usage)
+3. [Methods](#methods)
+4. [Screenshots](#screenshots)
+5. [Comments and Explanations](#comments-and-explanations)
 
 ## Overview
 The KNN Classifier is a simple yet powerful tool for classification tasks. It works by identifying the k-nearest neighbors to a given instance and assigning the most common class among these neighbors to the instance. This implementation includes:
 - Randomized splitting of the dataset into training and test sets.
 - Distance calculation using Euclidean distance.
 - Accuracy calculation to evaluate the classifier's performance.
-
-## Getting Started
-### Prerequisites
-- Java Development Kit (JDK) 8 or higher
-- Any Java IDE (e.g., IntelliJ IDEA, Eclipse) or a text editor and command-line tools
-
-### Installation
-1. Clone the repository or download the source code.
-2. Open the project in your preferred Java IDE or set up the project structure manually.
 
 ## Usage
 1. **Initialize the Dataset**:
