@@ -114,7 +114,7 @@ public class KnnClassificationApp {
         System.out.println("4. Show confusion matrix");
         System.out.println("5. Number of attributes");
         System.out.println("6. Number of instances");
-        System.out.println("7. Pick preprocessing method");
+        System.out.println("7. Select preprocessing method");
         System.out.println("8. Show preprocessed data");
     }
 
