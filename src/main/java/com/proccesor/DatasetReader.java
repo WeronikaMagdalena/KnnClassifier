@@ -11,7 +11,6 @@ public class DatasetReader {
 
     public static Dataset readFromFile(String fileName) {
         try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
-//            String[]
             int numRows = Integer.parseInt(reader.readLine());
             int numCols = Integer.parseInt(reader.readLine());
 
