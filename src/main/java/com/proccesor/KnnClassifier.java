@@ -27,7 +27,7 @@ public class KnnClassifier {
     }
 
     public String classify(Instance instance) {
-        // Calculate distances between 'instance' and all instances in trainingData
+        // Calculate distances between the instance and all instances in trainingData
         PriorityQueue<NeighborDistance> pq = new PriorityQueue<>(k);
         for (Instance trainInstance : trainingData.getInstances()) {
             double distance = calculateDistance(instance, trainInstance);
@@ -42,7 +42,7 @@ public class KnnClassifier {
             classVotes.put(classLabel, classVotes.getOrDefault(classLabel, 0) + 1);
         }
 
-        // Assign the class with the highest count as the predicted class for 'instance'
+        // Assign the class with the highest count as the predicted class for the instance
         String predictedClass = null;
         int maxVotes = -1;
         for (Map.Entry<String, Integer> entry : classVotes.entrySet()) {
